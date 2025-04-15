@@ -158,11 +158,11 @@ Menu
                 if (Util.isCpf(cpf)) break;
                 System.out.println("CPF invalido");
             }
-            cliente = new PessoaFisica(name, cpf);
+            cliente = new PessoaFisi(name, cpf);
         } else {
             System.out.print("CNPJ: ");
             String cnpj = scanner.nextLine().trim();
-            cliente = new PessoaJuridica(name, cnpj);
+            cliente = new PessoaJuri(name, cnpj);
         }
 
         // nao eh possivel, pois a classe cliente
