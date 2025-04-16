@@ -5,8 +5,7 @@ import java.util.Scanner;
 import javax.rmi.CORBA.Util;
 
 public class Menu {
-Menu
-    private Scanner scanner;
+private Scanner scanner;
     private Banco banco;
 
     public void run() {
