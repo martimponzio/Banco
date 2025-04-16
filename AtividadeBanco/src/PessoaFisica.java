@@ -1,15 +1,16 @@
-package Banco;
+package AtividadeBanco.src;
 
-public class PessoaFisi extends Cliente {
+public class PessoaFisica extends Cliente {
+
     private String cpf;
 
-    public PessoaFisi(String id, String name, String cpf) {
-        super(id, name);
+    public PessoaFisica(String name, String cpf) {
+        super(name);
         this.cpf = cpf;
     }
-    
-    public PessoaFisi(String name, String cpf) {
-        super(name);
+
+    public PessoaFisica(String id, String name, String cpf) {
+        super(id, name);
         this.cpf = cpf;
     }
 
@@ -21,5 +22,5 @@ public class PessoaFisi extends Cliente {
     public String toString() {
         return super.toString() + " (" + cpf + ")";
     }
-    
+
 }

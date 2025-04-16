@@ -1,4 +1,4 @@
-package Banco;
+package AtividadeBanco.src;
 
 public class ContaInvestimento extends Conta implements Rendimento {
 
@@ -25,4 +25,5 @@ public class ContaInvestimento extends Conta implements Rendimento {
     public void setTaxa(double taxa) {
         this.taxa = taxa;
     }
+    
 }

@@ -1,4 +1,4 @@
-package Banco;
+package AtividadeBanco.src;
 
 import java.util.UUID;
 
@@ -37,7 +37,9 @@ public abstract class Conta {
         return cliente;
     }
 
-    
+    /*
+     * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
+     */
     @Override
     public String toString() {
         return "[" + this.id + "]: " + this.saldo;

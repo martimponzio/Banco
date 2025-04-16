@@ -1,9 +1,9 @@
-package Banco;
+package AtividadeBanco.src;
 
 public class Main {
 
     public static void main(String[] args) {
-        (new Menu()).run();
+        (new Terminal()).run();
     }
 
 }

@@ -1,4 +1,4 @@
-package Banco;
+package AtividadeBanco.src;
 
 public interface Rendimento {
 

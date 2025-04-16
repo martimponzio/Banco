@@ -1,11 +1,11 @@
-package Banco;
+package AtividadeBanco.src;
+
 import java.util.List;
 import java.util.Scanner;
 
-import javax.rmi.CORBA.Util;
+public class Terminal {
 
-public class Menu {
-private Scanner scanner;
+    private Scanner scanner;
     private Banco banco;
 
     public void run() {
@@ -159,11 +159,11 @@ private Scanner scanner;
                 if (Util.isCpf(cpf)) break;
                 System.out.println("CPF invalido");
             }
-            cliente = new PessoaFisi(name, cpf);
+            cliente = new PessoaFisica(name, cpf);
         } else {
             System.out.print("CNPJ: ");
             String cnpj = scanner.nextLine().trim();
-            cliente = new PessoaJuri(name, cnpj);
+            cliente = new PessoaJuridica(name, cnpj);
         }
 
         // nao eh possivel, pois a classe cliente

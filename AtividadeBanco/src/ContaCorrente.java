@@ -1,4 +1,4 @@
-package Banco;
+package AtividadeBanco.src;
 
 public class ContaCorrente extends Conta {
 
@@ -13,7 +13,11 @@ public class ContaCorrente extends Conta {
         this.limite = limite;
     }
 
-   
+    /* 
+     * realiza um saque da conta do usuario
+     * restrito ao saldo da conta e nao permite
+     * valores negativos
+     */
     @Override
     public void sacar(double valor) {
         if (valor < 0) {
