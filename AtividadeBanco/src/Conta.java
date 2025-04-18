@@ -6,7 +6,6 @@ public abstract class Conta {
 
     private String id = UUID.randomUUID().toString();
     
-    // a classe e os filhos podem enxergar esse atributo.
     protected double saldo = 0;
     protected final Cliente cliente;
 
@@ -21,8 +20,7 @@ public abstract class Conta {
         this.saldo += valor;
     }
 
-    // a classe especialista (filha) eh obrigada
-    // a implementar esse metodo.
+
     public abstract void sacar(double valor);
 
     public String getId() {
@@ -44,9 +42,8 @@ public abstract class Conta {
     public String toString() {
         return "[" + this.id + "]: " + this.saldo;
     }
-
     public void remove(String id2) {
-        // TODO Auto-generated method stub
+
         throw new UnsupportedOperationException("Unimplemented method 'remove'");
     }
 

@@ -20,7 +20,6 @@ public class PessoaJuridica extends Cliente {
 
     @Override
     protected Cliente get(String clienteId) {
-    
         throw new UnsupportedOperationException("Unimplemented method 'get'");
     }
     
