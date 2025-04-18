@@ -59,5 +59,13 @@ public abstract class Cliente {
     public int hashCode() {
         return id.hashCode();
     }
+
+    public void removeConta(String contaId) {
+        contas.remove(contaId);
+    }
+
+    protected abstract Cliente get(String clienteId);
+
     
 }
+

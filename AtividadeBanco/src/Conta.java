@@ -45,4 +45,9 @@ public abstract class Conta {
         return "[" + this.id + "]: " + this.saldo;
     }
 
+    public void remove(String id2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'remove'");
+    }
+
 }

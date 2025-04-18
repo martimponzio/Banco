@@ -1,222 +1,215 @@
 package AtividadeBanco.src;
 
+import javax.swing.*;
 import java.util.List;
-import java.util.Scanner;
 
 public class Terminal {
 
-    private Scanner scanner;
     private Banco banco;
 
     public void run() {
-        try {
-            this.scanner = new Scanner(System.in);
-            this.banco = new Banco("PME International Bank");
-            System.out.println();
-            System.out.println(banco.getName());
-            System.out.println();
-            Cliente atualCliente = null;
-            Conta atualConta = null;
-            while (true) {
+        banco = new Banco("PME International Bank");
+        Cliente atualCliente = null;
+        Conta atualConta = null;
 
-                try {
+        JOptionPane.showMessageDialog(null, banco.getName(), "Banco", JOptionPane.INFORMATION_MESSAGE);
 
-                    String prompt = "";
-                    prompt +=
-                        atualCliente == null
-                        ? ""
-                        : atualCliente.getName();
-                    prompt +=
-                        atualConta == null
-                        ? ""
-                        : String.format("|%s [%s]", atualConta.getId(), atualConta.getSaldo());
+        while (true) {
+            String prompt = "Banco PME International\n\n";
+            prompt += atualCliente == null ? "Nenhum cliente selecionado." : atualCliente.getName();
+            prompt += atualConta == null ? "" : String.format(" | Conta: %s [Saldo: %.2f]", atualConta.getId(), atualConta.getSaldo());
 
-                    System.out.print(prompt + "> ");
-                    String line = scanner.nextLine().trim();
-                    if (line.equals("exit")) {
-                        break;
-                    } else if (line.equals("help")) {
-                        printHelp();
-                    } else if (line.equals("1")) {
-                        // cria cliente
+            String[] options = {
+                "Criar Cliente", "Listar Clientes", "Selecionar Cliente", "Criar Conta",
+                "Listar Contas", "Selecionar Conta", "Depositar", "Sacar",
+                "Listar Todas as Contas", "Render", "Excluir Cliente", "Sair"
+            };
+
+            int escolha = JOptionPane.showOptionDialog(null, prompt, "Menu", JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+            if (escolha == -1) {
+                int confirmar = JOptionPane.showConfirmDialog(null, "Deseja realmente sair?", "Confirmação", JOptionPane.YES_NO_OPTION);
+                if (confirmar == JOptionPane.YES_OPTION) {
+                    JOptionPane.showMessageDialog(null, "Encerrando o programa!", "Fim", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                } else {
+                    continue;
+                }
+            }
+
+            try {
+                switch (escolha) {
+                    case 0:
                         atualCliente = createCustomer();
                         banco.addCliente(atualCliente);
                         atualConta = null;
-                    } else if (line.equals("2")) {
+                        break;
+                    case 1:
                         listCustomers();
-                    } else if (line.equals("3")) {
-                        System.out.print("codigo do cliente: ");
-                        String id = scanner.nextLine();
-                        atualCliente = banco.getCliente(id);
-                        atualConta = null;
-                    } else if (line.equals("4")) {
-                        if (atualCliente == null) {
-                            throw new BancoException("D05", "cliente não selecionado");
+                        break;
+                    case 2:
+                        List<Cliente> clientes = banco.getClientes();
+                        if (clientes.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Nenhum cliente cadastrado.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                            break;
                         }
-                        Conta conta = createAccount(atualCliente);
-                        atualCliente.addConta(conta);
-                        atualConta = conta;
-                        // adicionar conta no banco
+
+                        String[] opcoesSelecao = clientes.stream()
+                                .map(c -> String.format("%s - [%s]", c.getName(), c.getId()))
+                                .toArray(String[]::new);
+
+                        String escolhaCliente = (String) JOptionPane.showInputDialog(
+                                null,
+                                "Selecione o cliente:",
+                                "Selecionar Cliente",
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                opcoesSelecao,
+                                opcoesSelecao[0]
+                        );
+
+                        if (escolhaCliente != null) {
+                            String clienteIdSelecionado = escolhaCliente.substring(escolhaCliente.indexOf("[") + 1, escolhaCliente.indexOf("]"));
+                            atualCliente = banco.getCliente(clienteIdSelecionado);
+                            atualConta = null;
+                        }
+                        break;
+                    case 3:
+                        if (atualCliente == null)
+                            throw new BancoException("D05", "Cliente não selecionado");
+
+                        atualConta = createAccount(atualCliente);
+                        atualCliente.addConta(atualConta);
                         banco.addConta(atualConta);
-
-                    } else if (line.equals("5")) {
-                        if (atualCliente == null) {
-                            throw new BancoException("D05", "cliente não selecionado");
-                        }
+                        break;
+                    case 4:
+                        if (atualCliente == null)
+                            throw new BancoException("D05", "Cliente não selecionado");
                         listAccounts(atualCliente.getContas());
-
-                    } else if (line.equals("6")) {
-                        if (atualCliente == null) {
-                            throw new BancoException("D05", "cliente não selecionado");
-                        }
-                        System.out.print("codigo da conta: ");
-                        String id = scanner.nextLine();
-                        atualConta = atualCliente.getConta(id);
-
-                    } else if (line.equals("7")) {
-
-                        // depositar
-                        if (atualConta == null) {
-                            throw new BancoException("D06", "conta não selecionada");
-                        }
-                        double valor = inputValue();
-                        atualConta.depositar(valor);
-
-                    } else if (line.equals("8")) {
-
-                        // sacar
-                        if (atualConta == null) {
-                            throw new BancoException("D06", "conta não selecionada");
-                        }
-                        double valor = inputValue();
-                        atualConta.sacar(valor);
-
-                    } else if (line.equals("9")) {
-
+                        break;
+                    case 5:
+                        if (atualCliente == null)
+                            throw new BancoException("D05", "Cliente não selecionado");
+                        String contaId = JOptionPane.showInputDialog("Digite o código da conta:");
+                        atualConta = atualCliente.getConta(contaId);
+                        break;
+                    case 6:
+                        if (atualConta == null)
+                            throw new BancoException("D06", "Conta não selecionada");
+                        double valorDeposito = inputValue("Digite o valor para depositar:");
+                        atualConta.depositar(valorDeposito);
+                        break;
+                    case 7:
+                        if (atualConta == null)
+                            throw new BancoException("D06", "Conta não selecionada");
+                        double valorSaque = inputValue("Digite o valor para sacar:");
+                        atualConta.sacar(valorSaque);
+                        break;
+                    case 8:
                         listAccounts(banco.getContas());
+                        break;
+                    case 9:
+                        banco.getContas().stream().filter(c -> c instanceof Rendimento)
+                                .forEach(c -> ((Rendimento) c).render());
+                        JOptionPane.showMessageDialog(null, "Contas renderizadas com sucesso!", "Render", JOptionPane.INFORMATION_MESSAGE);
+                        break;
+                    case 10:
+                        List<Cliente> clientesParaExcluir = banco.getClientes();
+                        if (clientesParaExcluir.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Nenhum cliente cadastrado.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                            break;
+                        }
 
-                    } else if (line.equals("r")) {
+                        String[] opcoesExclusao = clientesParaExcluir.stream()
+                                .map(c -> String.format("%s - [%s]", c.getName(), c.getId()))
+                                .toArray(String[]::new);
 
-                        banco.getContas().forEach(c -> {
-                            if (c instanceof Rendimento) {
-                                ((Rendimento) c).render();
+                        String escolhaExclusao = (String) JOptionPane.showInputDialog(
+                                null,
+                                "Selecione o cliente para excluir:",
+                                "Excluir Cliente",
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                opcoesExclusao,
+                                opcoesExclusao[0]
+                        );
+
+                        if (escolhaExclusao != null) {
+                            String clienteIdExcluir = escolhaExclusao.substring(escolhaExclusao.indexOf("[") + 1, escolhaExclusao.indexOf("]"));
+                            try {
+                                banco.removeCliente(clienteIdExcluir);
+                                if (atualCliente != null && atualCliente.getId().equals(clienteIdExcluir)) {
+                                    atualCliente = null;
+                                    atualConta = null;
+                                }
+                                JOptionPane.showMessageDialog(null, "Cliente excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                            } catch (BancoException be) {
+                                JOptionPane.showMessageDialog(null, be.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             }
-                        });
-
-                    } else if (line.length() == 0) {
-                    } else {
-                        throw new UnsupportedOperationException("invalid command");
-                    }
-                } catch (UnsupportedOperationException e) {
-                    System.err.println(e.getMessage());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                        }
+                        break;
+                    case 11:
+                        JOptionPane.showMessageDialog(null, "Encerrando o programa!", "Fim", JOptionPane.INFORMATION_MESSAGE);
+                        return;
                 }
+            } catch (BancoException be) {
+                JOptionPane.showMessageDialog(null, be.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
-        } catch(Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (scanner != null) {
-                scanner.close();
-            }
-            System.out.println("bye bye!");    
         }
     }
 
     private void listCustomers() {
-        // for (Cliente c: banco.getClientes()) {
-        //     System.out.println(c);
-        // }
-        banco.getClientes().stream().forEach(c -> {
-            System.out.println(c);
-        });
+        StringBuilder sb = new StringBuilder("Clientes:\n");
+        banco.getClientes().forEach(c -> sb.append(c.toString()).append("\n"));
+        JOptionPane.showMessageDialog(null, sb.toString(), "Clientes", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void listAccounts(List<Conta> contas) {
-        contas.stream().forEach(c -> {
-            System.out.println((
-                c instanceof ContaCorrente ? "CC" :
-                c instanceof ContaPoupanca ? "CP" :
-                "CI") + " " + c
-            );
-        });
+        StringBuilder sb = new StringBuilder("Contas:\n");
+        contas.forEach(c -> sb.append(c.toString()).append("\n"));
+        JOptionPane.showMessageDialog(null, sb.toString(), "Contas", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private Cliente createCustomer() {
+        String name = JOptionPane.showInputDialog("Nome do Cliente:");
+        String tipo = JOptionPane.showInputDialog("Tipo de cliente: Física (f) ou Jurídica (j)?");
 
-        Cliente cliente;
-
-        System.out.print("Nome: ");
-        String name = scanner.nextLine().trim();
-
-        System.out.print("Tipo Fisica|Juridica [f|j]: ");
-        String tipo = scanner.nextLine().trim();
-        if (tipo.trim().toLowerCase().equals("f")) {
-            String cpf = null;
-            while (true) {
-                System.out.print("CPF: ");
-                cpf = scanner.nextLine().trim();
+        if (tipo.equalsIgnoreCase("f")) {
+            String cpf;
+            do {
+                cpf = JOptionPane.showInputDialog("CPF:");
                 if (Util.isCpf(cpf)) break;
-                System.out.println("CPF invalido");
-            }
-            cliente = new PessoaFisica(name, cpf);
+                JOptionPane.showMessageDialog(null, "CPF inválido", "Erro", JOptionPane.ERROR_MESSAGE);
+            } while (true);
+            return new PessoaFisica(name, cpf);
         } else {
-            System.out.print("CNPJ: ");
-            String cnpj = scanner.nextLine().trim();
-            cliente = new PessoaJuridica(name, cnpj);
+            String cnpj = JOptionPane.showInputDialog("CNPJ:");
+            return new PessoaJuridica(name, cnpj);
         }
-
-        // nao eh possivel, pois a classe cliente
-        // eh abstrata
-        // Cliente cliente = new Cliente(name);
-
-        return cliente;
-    }
-    
-    private void printHelp() {
-        String help = "";
-        help += "\n  1. criar cliente";
-        help += "\n  2. listar clientes";
-        help += "\n  3. selectionar cliente";
-        help += "\n  4. criar conta";
-        help += "\n  5. listar contas";
-        help += "\n  6. selecionar conta";
-        help += "\n  7. depositar";
-        help += "\n  8. sacar";
-        help += "\n  9. lista todas as contas";
-        help += "\n  r. render";
-        System.out.println(help);
     }
 
     private Conta createAccount(Cliente cliente) {
-        if (cliente == null) {
-            throw new RuntimeException("Cliente nao definido");
+        String tipo = JOptionPane.showInputDialog("Tipo de conta: (P)oupança, (C)orrente ou (I)nvestimento?").toLowerCase();
+        switch (tipo) {
+            case "p":
+                return new ContaPoupanca(cliente);
+            case "c":
+                return new ContaCorrente(cliente);
+            default:
+                return new ContaInvestimento(cliente);
         }
-        Conta conta;
-        System.out.print("Tipo [(P)oupanca|(C)orrente|(I)nvestimento]: ");
-        String tipo = scanner.nextLine().trim().toLowerCase();
-
-        if (tipo.equals("p")) {
-            conta = new ContaPoupanca(cliente);
-        } else if (tipo.equals("c")) {
-            conta = new ContaCorrente(cliente);
-        } else {
-            conta = new ContaInvestimento(cliente);
-        }
-
-        return conta;
     }
 
-    private double inputValue() {
+    private double inputValue(String message) {
         while (true) {
             try {
-                System.out.print("valor: ");
-                String s = scanner.nextLine();
-                return Double.parseDouble(s);
+                return Double.parseDouble(JOptionPane.showInputDialog(message));
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                JOptionPane.showMessageDialog(null, "Valor inválido. Tente novamente.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-
 }

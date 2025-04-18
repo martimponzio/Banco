@@ -17,5 +17,11 @@ public class PessoaJuridica extends Cliente {
     public String getCnpj() {
         return cnpj;
     }
+
+    @Override
+    protected Cliente get(String clienteId) {
+    
+        throw new UnsupportedOperationException("Unimplemented method 'get'");
+    }
     
 }

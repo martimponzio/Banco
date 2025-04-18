@@ -40,5 +40,9 @@ public final class Banco {
     public String getName() {
         return name;
     }
+
+    public void removeCliente(String clienteIdExcluir) {
+        throw new UnsupportedOperationException("Unimplemented method 'removeCliente'");
+    }
     
 }

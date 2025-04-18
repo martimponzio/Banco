@@ -23,4 +23,9 @@ public class PessoaFisica extends Cliente {
         return super.toString() + " (" + cpf + ")";
     }
 
+    @Override
+    protected Cliente get(String clienteId) {
+        throw new UnsupportedOperationException("Unimplemented method 'get'");
+    }
+
 }
