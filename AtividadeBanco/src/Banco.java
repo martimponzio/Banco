@@ -41,8 +41,19 @@ public final class Banco {
         return name;
     }
 
-    public void removeCliente(String clienteIdExcluir) {
-        throw new UnsupportedOperationException("Unimplemented method 'removeCliente'");
-    }
+    public void removeCliente(String clienteIdExcluir) throws BancoException {
+        Cliente cliente = clientesById.get(clienteIdExcluir);
+        if (cliente == null) {
+            throw new BancoException("D07", "Cliente não encontrado!");
+        }
     
+        // Remove as contas associadas ao cliente
+        for (Conta conta : cliente.getContas()) {
+            contasById.remove(conta.getId());
+        }
+    
+        
+        clientesById.remove(clienteIdExcluir);
+    }
+        
 }
